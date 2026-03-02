@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - K&B Shopping Hub | Floral Background</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* ===== DYNAMIC FLORAL BACKGROUND ===== */
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+            background: linear-gradient(145deg, #f8c9d4, #b8e1ff, #d9b8ff, #fde2c4);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating flowers */
+        .flower {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+            font-size: 2.5rem;
+            opacity: 0.5;
+            animation: floatFlower 20s infinite linear;
+            user-select: none;
+        }
+
+        @keyframes floatFlower {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0.1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-20vh) rotate(360deg);
+                opacity: 0.1;
+            }
+        }
+
+        /* Positions for flowers */
+        .flower1 { left: 5%; animation-duration: 18s; animation-delay: 0s; }
+        .flower2 { left: 15%; animation-duration: 22s; animation-delay: 2s; }
+        .flower3 { left: 25%; animation-duration: 20s; animation-delay: 4s; }
+        .flower4 { left: 35%; animation-duration: 25s; animation-delay: 1s; }
+        .flower5 { left: 45%; animation-duration: 19s; animation-delay: 5s; }
+        .flower6 { left: 55%; animation-duration: 23s; animation-delay: 3s; }
+        .flower7 { left: 65%; animation-duration: 21s; animation-delay: 6s; }
+        .flower8 { left: 75%; animation-duration: 24s; animation-delay: 0.5s; }
+        .flower9 { left: 85%; animation-duration: 17s; animation-delay: 4.5s; }
+        .flower10 { left: 95%; animation-duration: 26s; animation-delay: 2.5s; }
+
+        /* Ensure content is above flowers */
+        .login-container, .dashboard-container {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .login-container {
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-container h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: 0.3s;
+            background: rgba(255,255,255,0.8);
+        }
+
+        .form-group input:focus {
+            border-color: #ff6b9d;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255,107,157,0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255,107,157,0.4);
+            background: linear-gradient(135deg, #fad0c4 0%, #ff9a9e 100%);
+        }
+
+        .dashboard-container {
+            background: rgba(255,255,255,0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 1400px;
+            min-height: 80vh;
+            display: none;
+            backdrop-filter: blur(8px);
+        }
+
+        .dashboard-container.active {
+            display: block;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(255,107,157,0.3);
+        }
+
+        .dashboard-header h2 {
+            color: #333;
+            font-size: 2rem;
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1.5rem;
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .logout-btn:hover {
+            background: #ff4d88;
+            transform: scale(1.05);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: #333;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(255,107,157,0.2);
+        }
+
+        .stat-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .orders-table th {
+            background: #ff6b9d;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .orders-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .orders-table tr:hover {
+            background: #fff0f5;
+        }
+
+        .status-pending {
+            background: #ffc107;
+            color: #333;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        .status-completed {
+            background: #28a745;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .whatsapp-btn:hover {
+            background: #20b859;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Flowers Background -->
+    <div class="flower flower1">🌸</div>
+    <div class="flower flower2">🌼</div>
+    <div class="flower flower3">🌻</div>
+    <div class="flower flower4">🌺</div>
+    <div class="flower flower5">🌸</div>
+    <div class="flower flower6">🌷</div>
+    <div class="flower flower7">🌹</div>
+    <div class="flower flower8">🌸</div>
+    <div class="flower flower9">🌼</div>
+    <div class="flower flower10">🌻</div>
+
+    <!-- Login Form -->
+    <div class="login-container" id="loginForm">
+        <h2>🌸 Admin Login 🌸</h2>
+        <form onsubmit="adminLogin(event)">
+            <div class="form-group">
+                <input type="text" id="username" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="login-btn">Login to Dashboard</button>
+        </form>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="dashboard-container" id="adminDashboard">
+        <div class="dashboard-header">
+            <h2>🌸 K&B Shopping Hub - Admin Dashboard 🌸</h2>
+            <button class="logout-btn" onclick="adminLogout()">Logout</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Orders</h3>
+                <div class="number" id="totalOrders">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pending</h3>
+                <div class="number" id="pendingOrders">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Completed</h3>
+                <div class="number" id="completedOrders">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Revenue</h3>
+                <div class="number" id="totalRevenue">UGX 0</div>
+            </div>
+        </div>
+
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Location</th>
+                    <th>Delivery</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="ordersList">
+                <!-- Orders will be displayed here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let orders = JSON.parse(localStorage.getItem('orders')) || [];
+
+        function adminLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Simple authentication - Updated credentials
+            if (username === 'BARKALIXOM' && password === '801279b') {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('adminDashboard').classList.add('active');
+                loadOrders();
+            } else {
+                alert('Invalid credentials!');
+            }
+        }
+
+        function adminLogout() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('adminDashboard').classList.remove('active');
+        }
+
+        function loadOrders() {
+            const ordersList = document.getElementById('ordersList');
+            ordersList.innerHTML = '';
+
+            let totalOrders = orders.length;
+            let pendingOrders = orders.filter(o => o.status === 'pending').length;
+            let completedOrders = orders.filter(o => o.status === 'completed').length;
+            let totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('pendingOrders').textContent = pendingOrders;
+            document.getElementById('completedOrders').textContent = completedOrders;
+            document.getElementById('totalRevenue').textContent = `UGX ${totalRevenue.toLocaleString()}`;
+
+            orders.forEach(order => {
+                const row = document.createElement('tr');
+                // Convert total to UGX if it's stored as number
+                const totalUGX = order.total; 
+                row.innerHTML = `
+                    <td>#${order.id}</td>
+                    <td>${order.customer}</td>
+                    <td>${order.location}</td>
+                    <td>${order.deliveryDate}</td>
+                    <td>${order.items.map(item => item.name).join(', ')}</td>
+                    <td>UGX ${totalUGX.toLocaleString()}</td>
+                    <td>
+                        <span class="status-${order.status === 'pending' ? 'pending' : 'completed'}">
+                            ${order.status}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="whatsapp-btn" onclick="contactCustomer('${order.customer}')">
+                            📱 Contact
+                        </button>
+                    </td>
+                `;
+                ordersList.appendChild(row);
+            });
+        }
+
+        function contactCustomer(phone) {
+            window.open(`https://wa.me/${phone}`);
+        }
+
+        // Check if there are any sample orders for demo
+        if (orders.length === 0) {
+            // Add some sample orders for demonstration
+            orders.push({
+                id: 1,
+                customer: 'John Doe',
+                location: 'Kampala',
+                deliveryDate: '2026-03-15',
+                items: [{name: 'Classic Shirt'}, {name: 'Leather Shoes'}],
+                total: 190000,
+                status: 'pending'
+            });
+            orders.push({
+                id: 2,
+                customer: 'Jane Smith',
+                location: 'Jinja',
+                deliveryDate: '2026-03-16',
+                items: [{name: 'Summer Dress'}, {name: 'Handbag'}],
+                total: 251000,
+                status: 'completed'
+            });
+            localStorage.setItem('orders', JSON.stringify(orders));
+        }
+    </script>
+</body>
+</html>
