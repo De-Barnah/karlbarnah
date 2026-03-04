@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - K&B Shopping Hub | Floral Background</title>
+    <title>Admin - K&B Shopping Hub | Order Management + Tracker</title>
     <style>
         * {
             margin: 0;
@@ -56,7 +56,6 @@
             }
         }
 
-        /* Positions for flowers */
         .flower1 { left: 5%; animation-duration: 18s; animation-delay: 0s; }
         .flower2 { left: 15%; animation-duration: 22s; animation-delay: 2s; }
         .flower3 { left: 25%; animation-duration: 20s; animation-delay: 4s; }
@@ -68,7 +67,6 @@
         .flower9 { left: 85%; animation-duration: 17s; animation-delay: 4.5s; }
         .flower10 { left: 95%; animation-duration: 26s; animation-delay: 2.5s; }
 
-        /* Ensure content is above flowers */
         .login-container, .dashboard-container {
             position: relative;
             z-index: 10;
@@ -136,9 +134,9 @@
             padding: 2rem;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            width: 90%;
+            width: 95%;
             max-width: 1400px;
-            min-height: 80vh;
+            min-height: 85vh;
             display: none;
             backdrop-filter: blur(8px);
         }
@@ -154,6 +152,8 @@
             margin-bottom: 2rem;
             padding-bottom: 1rem;
             border-bottom: 2px solid rgba(255,107,157,0.3);
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .dashboard-header h2 {
@@ -178,7 +178,7 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -203,12 +203,18 @@
             font-weight: bold;
         }
 
+        /* NEW: Visitor counter specific style */
+        .visitor-card {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
         .orders-table {
             width: 100%;
             border-collapse: collapse;
             background: #f8f9fa;
             border-radius: 10px;
             overflow: hidden;
+            margin-bottom: 2rem;
         }
 
         .orders-table th {
@@ -245,18 +251,60 @@
             display: inline-block;
         }
 
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .complete-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .complete-btn:hover {
+            background: #1e7e34;
+        }
+        .clear-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .clear-btn:hover {
+            background: #b02a37;
+        }
         .whatsapp-btn {
             background: #25D366;
             color: white;
             border: none;
-            padding: 0.5rem 1rem;
+            padding: 0.3rem 0.8rem;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 0.9rem;
             transition: 0.3s;
         }
         .whatsapp-btn:hover {
             background: #20b859;
             transform: scale(1.05);
+        }
+
+        .reset-visitor {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 1rem;
         }
     </style>
 </head>
@@ -311,37 +359,97 @@
                 <h3>Revenue</h3>
                 <div class="number" id="totalRevenue">UGX 0</div>
             </div>
+            <!-- NEW: Visitor counter card -->
+            <div class="stat-card visitor-card">
+                <h3>👥 Unique Visitors</h3>
+                <div class="number" id="visitorCount">0</div>
+            </div>
         </div>
 
+        <h3 style="margin-bottom: 1rem;">📦 Manage Orders</h3>
         <table class="orders-table">
             <thead>
                 <tr>
                     <th>Order ID</th>
                     <th>Customer</th>
+                    <th>WhatsApp</th>
                     <th>Location</th>
                     <th>Delivery</th>
                     <th>Items</th>
-                    <th>Total</th>
+                    <th>Total (UGX)</th>
                     <th>Status</th>
-                    <th>Action</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody id="ordersList">
                 <!-- Orders will be displayed here -->
             </tbody>
         </table>
+
+        <!-- Manual order registration (for admin to add orders manually) -->
+        <div style="background: #f0f0f0; padding: 1.5rem; border-radius: 10px; margin-top: 2rem;">
+            <h4 style="margin-bottom: 1rem;">➕ Register New Order Manually</h4>
+            <form onsubmit="registerManualOrder(event)" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end;">
+                <div style="flex: 2; min-width: 200px;">
+                    <label>Customer Name</label>
+                    <input type="text" id="manualName" placeholder="e.g., John Doe" required style="width:100%; padding:0.5rem;">
+                </div>
+                <div style="flex: 1; min-width: 150px;">
+                    <label>WhatsApp</label>
+                    <input type="text" id="manualPhone" placeholder="2567..." required style="width:100%; padding:0.5rem;">
+                </div>
+                <div style="flex: 1; min-width: 150px;">
+                    <label>Location</label>
+                    <input type="text" id="manualLocation" placeholder="Kampala" required style="width:100%; padding:0.5rem;">
+                </div>
+                <div style="flex: 1; min-width: 140px;">
+                    <label>Delivery Date</label>
+                    <input type="date" id="manualDate" required style="width:100%; padding:0.5rem;">
+                </div>
+                <div style="flex: 1; min-width: 120px;">
+                    <label>Items (comma)</label>
+                    <input type="text" id="manualItems" placeholder="Shoes, Shirt" required style="width:100%; padding:0.5rem;">
+                </div>
+                <div style="flex: 1; min-width: 120px;">
+                    <label>Total UGX</label>
+                    <input type="number" id="manualTotal" placeholder="150000" required style="width:100%; padding:0.5rem;">
+                </div>
+                <div>
+                    <button type="submit" class="login-btn" style="padding:0.5rem 2rem;">Add Order</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
+        // ==================== DATA INIT ====================
+        // Orders array
         let orders = JSON.parse(localStorage.getItem('orders')) || [];
 
+        // Visitor counter: initialize from localStorage
+        let visitorCount = parseInt(localStorage.getItem('visitorCount') || '0');
+
+        // ==================== TRACK VISITORS ====================
+        // This function should be called on every page (including product pages)
+        // For admin page we just display it, but we need to ensure it's set.
+        // We'll use a simple mechanism: if 'visitorTracked' session flag not set, increment.
+        function trackVisitor() {
+            // Use sessionStorage to avoid counting same session multiple times
+            if (!sessionStorage.getItem('visitorTracked')) {
+                visitorCount += 1;
+                localStorage.setItem('visitorCount', visitorCount);
+                sessionStorage.setItem('visitorTracked', 'true');
+            }
+        }
+
+        // Call it immediately
+        trackVisitor();
+
+        // ==================== ADMIN LOGIN ====================
         function adminLogin(event) {
             event.preventDefault();
-            
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-
-            // Simple authentication - Updated credentials
             if (username === 'BARKALIXOM' && password === '801279b') {
                 document.getElementById('loginForm').style.display = 'none';
                 document.getElementById('adminDashboard').classList.add('active');
@@ -356,10 +464,12 @@
             document.getElementById('adminDashboard').classList.remove('active');
         }
 
+        // ==================== LOAD ORDERS & STATS ====================
         function loadOrders() {
             const ordersList = document.getElementById('ordersList');
             ordersList.innerHTML = '';
 
+            // Update stats
             let totalOrders = orders.length;
             let pendingOrders = orders.filter(o => o.status === 'pending').length;
             let completedOrders = orders.filter(o => o.status === 'completed').length;
@@ -369,43 +479,129 @@
             document.getElementById('pendingOrders').textContent = pendingOrders;
             document.getElementById('completedOrders').textContent = completedOrders;
             document.getElementById('totalRevenue').textContent = `UGX ${totalRevenue.toLocaleString()}`;
+            document.getElementById('visitorCount').textContent = visitorCount;
 
-            orders.forEach(order => {
+            // Sort orders: pending first, then completed (optional)
+            const sortedOrders = [...orders].sort((a, b) => {
+                if (a.status === 'pending' && b.status === 'completed') return -1;
+                if (a.status === 'completed' && b.status === 'pending') return 1;
+                return b.id - a.id; // newest first
+            });
+
+            sortedOrders.forEach(order => {
                 const row = document.createElement('tr');
-                // Convert total to UGX if it's stored as number
-                const totalUGX = order.total; 
+                const itemsStr = order.items.map(item => item.name).join(', ');
+                const totalUGX = order.total;
+
                 row.innerHTML = `
                     <td>#${order.id}</td>
                     <td>${order.customer}</td>
+                    <td>${order.phone || 'N/A'}</td>
                     <td>${order.location}</td>
                     <td>${order.deliveryDate}</td>
-                    <td>${order.items.map(item => item.name).join(', ')}</td>
+                    <td>${itemsStr}</td>
                     <td>UGX ${totalUGX.toLocaleString()}</td>
                     <td>
                         <span class="status-${order.status === 'pending' ? 'pending' : 'completed'}">
                             ${order.status}
                         </span>
                     </td>
-                    <td>
-                        <button class="whatsapp-btn" onclick="contactCustomer('${order.customer}')">
-                            📱 Contact
-                        </button>
+                    <td class="action-buttons">
+                        ${order.status === 'pending' ? 
+                            `<button class="complete-btn" onclick="markAsCompleted(${order.id})">✓ Complete</button>` : 
+                            `<button class="clear-btn" onclick="clearOrder(${order.id})">🗑️ Clear</button>`
+                        }
+                        <button class="whatsapp-btn" onclick="contactCustomer('${order.phone || '256788010625'}')">📱</button>
                     </td>
                 `;
                 ordersList.appendChild(row);
             });
         }
 
+        // ==================== ORDER ACTIONS ====================
+        function markAsCompleted(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'completed';
+                localStorage.setItem('orders', JSON.stringify(orders));
+                loadOrders(); // refresh table
+            }
+        }
+
+        function clearOrder(orderId) {
+            // Remove order completely (only for completed orders)
+            orders = orders.filter(o => o.id !== orderId);
+            localStorage.setItem('orders', JSON.stringify(orders));
+            loadOrders();
+        }
+
         function contactCustomer(phone) {
             window.open(`https://wa.me/${phone}`);
         }
 
-        // Check if there are any sample orders for demo
+        // ==================== REGISTER MANUAL ORDER ====================
+        function registerManualOrder(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('manualName').value;
+            const phone = document.getElementById('manualPhone').value;
+            const location = document.getElementById('manualLocation').value;
+            const date = document.getElementById('manualDate').value;
+            const itemsStr = document.getElementById('manualItems').value;
+            const total = parseInt(document.getElementById('manualTotal').value);
+
+            if (!name || !phone || !location || !date || !itemsStr || !total) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            // Generate new ID (simple increment)
+            const newId = orders.length > 0 ? Math.max(...orders.map(o => o.id)) + 1 : 1;
+
+            const items = itemsStr.split(',').map(i => ({ name: i.trim() }));
+
+            const newOrder = {
+                id: newId,
+                customer: name,
+                phone: phone,
+                location: location,
+                deliveryDate: date,
+                items: items,
+                total: total,
+                status: 'pending'  // new orders start as pending
+            };
+
+            orders.push(newOrder);
+            localStorage.setItem('orders', JSON.stringify(orders));
+
+            // Clear form
+            document.getElementById('manualName').value = '';
+            document.getElementById('manualPhone').value = '';
+            document.getElementById('manualLocation').value = '';
+            document.getElementById('manualItems').value = '';
+            document.getElementById('manualTotal').value = '';
+            // Set default date maybe
+            document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
+
+            loadOrders();
+            alert('✅ Order registered successfully');
+        }
+
+        // ==================== RESET VISITOR COUNTER (optional for admin) ====================
+        function resetVisitorCount() {
+            if (confirm('Reset visitor counter to 0?')) {
+                visitorCount = 0;
+                localStorage.setItem('visitorCount', 0);
+                document.getElementById('visitorCount').textContent = '0';
+            }
+        }
+
+        // Initialize with sample orders if empty (but keep visitors separate)
         if (orders.length === 0) {
-            // Add some sample orders for demonstration
             orders.push({
                 id: 1,
                 customer: 'John Doe',
+                phone: '256788010625',
                 location: 'Kampala',
                 deliveryDate: '2026-03-15',
                 items: [{name: 'Classic Shirt'}, {name: 'Leather Shoes'}],
@@ -415,6 +611,7 @@
             orders.push({
                 id: 2,
                 customer: 'Jane Smith',
+                phone: '256788010626',
                 location: 'Jinja',
                 deliveryDate: '2026-03-16',
                 items: [{name: 'Summer Dress'}, {name: 'Handbag'}],
@@ -423,6 +620,20 @@
             });
             localStorage.setItem('orders', JSON.stringify(orders));
         }
+
+        // Extra: add a small reset button near visitor count (optional)
+        // We'll inject a button into the stats area after load
+        window.onload = function() {
+            // if dashboard active? but we can add button anyway
+            const visitorCard = document.querySelector('.visitor-card');
+            if (visitorCard) {
+                const resetBtn = document.createElement('button');
+                resetBtn.textContent = '↻ Reset';
+                resetBtn.className = 'reset-visitor';
+                resetBtn.onclick = resetVisitorCount;
+                visitorCard.appendChild(resetBtn);
+            }
+        };
     </script>
 </body>
 </html>
